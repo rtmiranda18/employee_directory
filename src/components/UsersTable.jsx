@@ -6,31 +6,54 @@ import './styles/users.scss';
 const UsersTable = () => {
     const [users, setUsers] = useState([]);
     const [update, setUpdate] = useState(false);
-    const fetchUsers = async () => {
-        await axios.get('https://randomuser.me/api/?results=20')
+    const fetchUsers = async (name, action) => {
+        await axios.get('https://randomuser.me/api/?seed=employees&results=20')
         .then((response) => {
             const {results} = response.data;
             setUsers(results); 
-            console.log(response.data);
+            console.log(response);
+            switch (action) {
+                case 'search':
+                    const searchUsers = results.filter(user => user.name.first.includes(name));
+                    setUsers(searchUsers);
+                    break;
+            
+                default:
+                    setUsers(results)
+                    break;
+            }
         })
         .catch((error) => {
             console.log(error);
         });
     }   
     useEffect(() => {
-        fetchUsers();
+        fetchUsers(null, '');
         return () => {
             setUpdate(false);
         }
-    }, [update])
+    }, [update]);
+    const [search, setSearch] = useState({user: ''})
+    const searchUser = (event) => {
+        const {name, value} = event.target;
+        setSearch({...search, [name]: value});
+        fetchUsers(value, 'search'); 
+    }
+   
+    const sortByName = () => {
+        const sortUsers = users.sort((a, b) => a.name.first.localeCompare(b.name.first))
+        console.log(sortUsers);
+        setUsers(sortUsers);
+    }
     return (
       <div className="users">
         UsersTable
+        <input type="text" name="user" placeholder="search" onChange={searchUser} value={search.user} />
         <table>
             <thead>
                 <tr>
                     <th>Image</th>
-                    <th>Name</th>
+                    <th onClick={sortByName}>Name</th>
                     <th>Phone</th>
                     <th>Email</th>
                     <th>DOB</th>
