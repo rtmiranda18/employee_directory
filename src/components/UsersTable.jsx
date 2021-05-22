@@ -6,7 +6,9 @@ import './styles/users.scss';
 const UsersTable = () => {
     const [users, setUsers] = useState([]);
     const [update, setUpdate] = useState(false);
+    const [loader, setLoader] = useState(false);
     const fetchUsers = async (name, action) => {
+        setLoader(true);
         await axios.get('https://randomuser.me/api/?seed=employees&results=20')
         .then((response) => {
             const {results} = response.data;
@@ -14,7 +16,7 @@ const UsersTable = () => {
             console.log(response);
             switch (action) {
                 case 'search':
-                    const searchUsers = results.filter(user => user.name.first.includes(name));
+                    const searchUsers = results.filter(user => user.name.first.toLowerCase().includes(name.toLowerCase()));
                     setUsers(searchUsers);
                     break;
             
@@ -26,6 +28,7 @@ const UsersTable = () => {
         .catch((error) => {
             console.log(error);
         });
+        setLoader(false);
     }   
     useEffect(() => {
         fetchUsers(null, '');
@@ -49,7 +52,9 @@ const UsersTable = () => {
       <div className="users">
         UsersTable
         <input type="text" name="user" placeholder="search" onChange={searchUser} value={search.user} />
-        <table>
+        {
+            loader ? '...loading' : 
+            <table>
             <thead>
                 <tr>
                     <th>Image</th>
@@ -85,6 +90,7 @@ const UsersTable = () => {
             }
             </tbody>
         </table>
+        }
       </div>
     );
   }
