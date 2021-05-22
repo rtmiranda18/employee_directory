@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import './styles/users.scss';
 
 const UsersTable = () => {
@@ -25,13 +26,42 @@ const UsersTable = () => {
     return (
       <div className="users">
         UsersTable
-        {
-            users.map((user, index) => 
-                <div className="user" key={index}>
-                    {user.name.first}  {user.name.last}
-                </div>
-            )
-        }
+        <table>
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>DOB</th>
+                </tr>
+            </thead>
+            <tbody>
+            {
+                users.map((user, index) => 
+                    <tr key={index}>
+                        <td>
+                            <div className="profilePicture">
+                                <img src={user.picture.medium} alt="profile" />
+                            </div>
+                        </td>
+                        <td>
+                            {user.name.first}  {user.name.last}
+                        </td>
+                        <td>
+                            {user.phone}
+                        </td>
+                        <td>
+                            {user.email}
+                        </td>
+                        <td>
+                            {moment(user.dob.date).format('MMMM DD, YYYY')}
+                        </td>
+                    </tr>
+                )
+            }
+            </tbody>
+        </table>
       </div>
     );
   }
