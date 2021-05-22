@@ -7,6 +7,7 @@ const UsersTable = () => {
     const [users, setUsers] = useState([]);
     const [update, setUpdate] = useState(false);
     const [loader, setLoader] = useState(false);
+    const [sorty, setSort] = useState(false);
     const fetchUsers = async (name, action) => {
         setLoader(true);
         await axios.get('https://randomuser.me/api/?seed=employees&results=20')
@@ -43,10 +44,20 @@ const UsersTable = () => {
         fetchUsers(value, 'search'); 
     }
    
-    const sortByName = () => {
-        const sortUsers = users.sort((a, b) => a.name.first.localeCompare(b.name.first))
-        console.log(sortUsers);
-        setUsers(sortUsers);
+    const sortByName = (key, sorty) => {
+        setSort(sorty);
+        const sortedUsers = users.sort((a, b) => {
+            let x = a[key[0]][key[1]];
+            let y = b[key[0]][key[1]];
+
+            if(x < y) {
+                return sorty ? -1 : 1;
+            }
+            if(x > y) {
+                return sorty ? 1 : -1;
+            }
+        })
+        setUsers(sortedUsers);
     }
     return (
       <div className="users">
@@ -58,7 +69,7 @@ const UsersTable = () => {
             <thead>
                 <tr>
                     <th>Image</th>
-                    <th onClick={sortByName}>Name</th>
+                    <th onClick={() => sortByName(['name', 'first'], !sorty)}>Name</th>
                     <th>Phone</th>
                     <th>Email</th>
                     <th>DOB</th>
